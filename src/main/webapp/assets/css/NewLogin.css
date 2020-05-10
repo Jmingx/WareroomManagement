@@ -1,0 +1,79 @@
+body{
+    background: url("../images/5.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+}
+
+#login_box{
+    width: 20%;;
+    height: 400px;
+    background: #00000060;
+    margin: auto;
+    margin-top: 10%;
+    text-align: center;
+    border-radius: 10px;
+    padding: 50px 50px;
+}
+
+#login_box h2{
+    color: #ffffff90;
+    margin-top: 5%;
+}
+
+#login_box #form #input_box{
+    margin-top: 5%;
+}
+
+#login_box #form #input_box i{
+    color: #ffffff;
+}
+
+#login_box #form #input_box input{
+    border: 0;
+    width: 60%;
+    font-size: 15px;
+    color: #ffffff;
+    background: #ffffff00;
+    border-bottom: 2px solid #ffffff;
+    padding: 5px 10px;
+    margin-top: 10px;
+}
+
+/*框内容居中*/
+#input_box input{
+    text-align: center;
+    border-radius: 5px;
+    /*选中后不显示蓝色边框*/
+    outline: none;
+}
+
+
+#login_box button{
+    margin-top: 50px;
+    width: 40%;
+    height: 30px;
+    border-radius: 10px;
+    border: 0;
+    color: #ffffff;
+    font-size: 20px;
+    /*background-image: linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%);*/
+    background-image: linear-gradient(to right, #fa709a 0%, #fee140 100%);
+    /*background-image: linear-gradient(-60deg, #ff5858 0%, #f09819 100%);*/
+}
+
+#login_box #forget{
+    margin-top: 40%;
+    margin-left: 80%;
+}
+#login_box #forget a{
+    color: #b9a494;
+}
+
+#login_box #Signup{
+    margin-top: -5%;
+    margin-right: 80%;
+}
+
+#login_box #Signup a{
+    color: #b9a494;
+}
