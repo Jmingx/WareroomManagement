@@ -67,7 +67,7 @@
     $(function () {
         $("#add-submit").click(function () {
             //AJAX传参
-            if ($("#input-componentId").val()!="-请选择零件-"&&$("#input-business").val()!=""&&!($("#input-business").val() instanceof Number)){
+            if ($("#input-componentId").val()!="-请选择零件-"&&$("#input-business").val()!=""&&($("#input-business").val() instanceof Number)){
                 $.get("/business", {
                     type: "insert",
                     componentId: $("#input-componentId").val(),

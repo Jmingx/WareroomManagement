@@ -77,7 +77,7 @@
 
     $(function () {
         $("#add-submit").click(function () {
-            if ($("#input-name").val()!=null&&$("#input-price").val()>0&&!($("#input-price").val()instanceof Number)&&$("#input-supplierId").val()!== "-请选择供应商-") {
+            if ($("#input-name").val()!=null&&$("#input-price").val()>0&&($("#input-price").val()instanceof Number)&&$("#input-supplierId").val()!== "-请选择供应商-") {
                 //AJAX传参
                 $.get("/component", {
                     type: "insert",

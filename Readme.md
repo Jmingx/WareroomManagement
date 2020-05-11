@@ -47,3 +47,6 @@ public void doFilter(ServletRequest servletRequest, ServletResponse servletRespo
 
 #### PS 今天光是debug就大半天了，而且界面确实太丑了，用了>Filter，真香！
 #### PS 确实是挺懵的，一路开发走来，测试全是用英文，导致突然冒了个**中文乱码**
+
+#### 部署到服务器上又出问题了，又查了下资料，原来tomcat默认字符集已经换成utf-8了，那就把tomcat的配置改改吧，成功了
+**在tomcat server.xml的Connector标签加上useBodyEncodingForURI="true" URIEncoding="UTF-8"**
