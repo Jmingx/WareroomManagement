@@ -38,7 +38,7 @@
                 <button id="delete" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2"
                         onclick="delete_business(${supplier.id},this)">删除
                 </button>
-                    <%--                <button id="update" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" onclick="update_business(${business.id},this)">更新</button>--%>
+                <button id="update" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" onclick="update_business(${supplier.id})">更新</button>
             </td>
         </tr>
     </c:forEach>
@@ -83,9 +83,37 @@
     })
 
     function delete_business(id, obj) {
-        if (confirm("确认删除?"))
+        if (confirm("确认删除?")){
             $.get("/supplier", {type: "delete", id: id});
-        // $(obj).parents("tr").remove();
-        window.setTimeout('window.location.reload()', 500);
+            // $(obj).parents("tr").remove();
+            window.setTimeout('window.location.reload()', 500);
+        }
+    }
+
+    function update_business(id) {
+        if (confirm("是否更新？")){
+            var name = prompt("请输入更新后的供应商名称：").trim();
+            if (name == ""){
+                alert("供应商名称不能为空！");
+                return;
+            }
+            var contact = prompt("请输入更新后的供应商联系方式：").trim();
+            if (confirm("是否确认更新？")){
+                $.get(
+                    "/supplier",
+                    {
+                        type:"update",
+                        name:name,
+                        contact:contact,
+                        id:id,
+                    }
+                    ,
+                    function () {
+                        alert("更新成功！");
+                        window.setTimeout('window.location.reload()', 500);
+                    }
+                )
+            }
+        }
     }
 </script>

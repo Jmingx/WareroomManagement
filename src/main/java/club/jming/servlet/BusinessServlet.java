@@ -37,11 +37,9 @@ public class BusinessServlet extends HttpServlet {
             deleteBusiness(req, resp);
         }
         if (type.equals("update")) {
-            System.out.println("update");
             updateBusiness(req,resp);
         }
         if (type.equals("search")) {
-            System.out.println("search");
         }
         if (type.equals("insert")) {
             insertBusiness(req, resp);
@@ -76,6 +74,18 @@ public class BusinessServlet extends HttpServlet {
 
     public void updateBusiness(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int componentId = Integer.parseInt(req.getParameter("componentId"));
+        System.out.println(componentId);
+        int business = Integer.parseInt(req.getParameter("business"));
+        int id = Integer.parseInt(req.getParameter("id"));
+
+        Business business1 = new Business();
+        business1.setId(id);
+        business1.setBusiness(business);
+        business1.setComponentId(componentId);
+
+        new BusinessDAO().updateBusiness(business1);
+
+        showBusiness(req,resp);
 
     }
 

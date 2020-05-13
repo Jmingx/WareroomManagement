@@ -28,18 +28,17 @@
     <% int i = 0; %>
     <c:forEach var="component" items="${components}">
         <tr class="tr-core">
-            <td><%=++i%>
-            </td>
-                <%--            注意这里的map取值--%>
+            <td><%=++i%></td>
+                <%--注意这里的map取值--%>
             <td>${component.id}</td>
             <td>${component.name}</td>
             <td>${component.price}￥</td>
             <td>${component.supplierId}</td>
             <td>
                 <button id="delete" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2"
-                        onclick="delete_component(${component.id},this)">删除
+                        onclick="delete_component(${component.id},${component.supplierId})">删除
                 </button>
-                    <%--                <button id="update" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" onclick="update_business(${business.id},this)">更新</button>--%>
+                <button id="update" onclick="update_business(${component.id},${component.supplierId})" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" >更新</button>
             </td>
         </tr>
     </c:forEach>
@@ -93,10 +92,46 @@
         })
     })
 
-    function delete_component(id, obj) {
-        if (confirm("确认删除?"))
+    function delete_component(id) {
+        if (confirm("确认删除?")){
             $.get("/component", {type: "delete", id: id});
-        // $(obj).parents("tr").remove();
-        window.setTimeout('window.location.reload()', 500);
+            // $(obj).parents("tr").remove();
+            window.setTimeout('window.location.reload()', 500);
+        }
+    }
+
+    function update_business(id,supplierId) {
+        if (confirm("是否更新？")){
+            var componentName = prompt("请输入更新后的零件名称？").trim();
+            if (componentName==""){
+                alert("零件名称不能为空值");
+                return;
+            }
+            var price = prompt("请输入更新后的价格").trim();
+            var price = new Number(price);
+            if (!(price > 0) ){
+                alert("请输入正确的数值!"+"          "+price);
+                return;
+            }
+            supplierId = new Number(supplierId);
+            if (confirm("是否确认更新？"+componentName+":"+price+"￥")){
+
+                $.get(
+                    "/component",
+                    {
+                        type:"update",
+                        componentId:id,
+                        componentName:componentName,
+                        price:price,
+                        supplierId:supplierId
+                    }
+                    ,
+                    function (msg) {
+                            alert("更新成功！");
+                            window.setTimeout('window.location.reload()', 500);
+                    }
+                )
+            }
+        }
     }
 </script>

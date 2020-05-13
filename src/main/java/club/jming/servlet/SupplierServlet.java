@@ -29,10 +29,9 @@ public class SupplierServlet extends HttpServlet {
             deleteSupplier(req,resp);
         }
         if (type.equals("update")){
-            System.out.println("update");
+            updateSupplier(req,resp);
         }
         if (type.equals("search")){
-            System.out.println("search");
         }
         if (type.equals("insert")){
             insertSupplier(req,resp);
@@ -47,7 +46,17 @@ public class SupplierServlet extends HttpServlet {
     }
 
     public void updateSupplier(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String name = (String) req.getAttribute("name");
+        String contact = (String) req.getAttribute("contact");
+        int id = Integer.parseInt(req.getParameter("id"));
 
+        SupplierInf supplierInf = new SupplierInf();
+        supplierInf.setId(id);
+        supplierInf.setContact(contact);
+        supplierInf.setName(name);
+
+        new SupplierInfDAO().updateSupplier(supplierInf);
+        showSupplier(req,resp);
     }
 
     private void showSupplier(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

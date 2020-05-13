@@ -34,8 +34,8 @@
             <td>${business.componentId}</td>
             <td>${business.business}/个</td>
             <td>
-                <button id="delete" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" onclick="delete_business(${business.id},this)">删除</button>
-<%--                <button id="update" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" onclick="update_business(${business.id},this)">更新</button>--%>
+                <button id="delete" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" onclick="delete_business(${business.id})">删除</button>
+                <button id="update" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" onclick="update_business(${business.id},${business.componentId})">更新</button>
             </td>
         </tr>
     </c:forEach>
@@ -81,10 +81,38 @@
         })
     })
 
-    function delete_business(id, obj) {
-        if (confirm("确认删除?"))
+    function delete_business(id) {
+        if (confirm("确认删除?")){
             $.get("/business", {type: "delete", id: id});
-        // $(obj).parents("tr").remove();
-        window.setTimeout('window.location.reload()', 500);
+            // $(obj).parents("tr").remove();
+            window.setTimeout('window.location.reload()', 500);
+        }
+    }
+
+    function update_business(id,componentId) {
+        if (confirm("是否更新？")){
+            var business = prompt("请输入更新后的事务数量？").trim();
+            business = new Number(business);
+            if (!(business instanceof Number)){
+                alert("事务只能为数值！");
+                return;
+            }
+            if (confirm("是否确认更新？")){
+                $.get(
+                    "/business",
+                    {
+                        type:"update",
+                        id:id,
+                        business:business,
+                        componentId:componentId,
+                    }
+                    ,
+                    function () {
+                        alert("更新成功！");
+                        window.setTimeout('window.location.reload()', 500);
+                    }
+                )
+            }
+        }
     }
 </script>

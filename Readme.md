@@ -1,3 +1,8 @@
+前端使用原生jquery+html+css+js
+后台使用经典servlet+jsp
+
+基本上没用什么框架，非常简单的练手作业
+
 ###### 记录一下开发日记
 ###### 我人傻了，现在才想起写日志
 
@@ -50,3 +55,7 @@ public void doFilter(ServletRequest servletRequest, ServletResponse servletRespo
 
 #### 部署到服务器上又出问题了，又查了下资料，原来tomcat默认字符集已经换成utf-8了，那就把tomcat的配置改改吧，成功了
 **在tomcat server.xml的Connector标签加上useBodyEncodingForURI="true" URIEncoding="UTF-8"**
+
+## 2020-5-13
+1.增加了**修改**功能
+2.修复了部分bug，密码登录失败将会有反馈

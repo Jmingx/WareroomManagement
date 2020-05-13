@@ -37,7 +37,6 @@ public class ComponentServlet extends HttpServlet {
             updateComponent(req,resp);
         }
         if (type.equals("search")){
-            System.out.println("search");
         }
         if (type.equals("insert")){
             insertComponent(req,resp);
@@ -52,17 +51,19 @@ public class ComponentServlet extends HttpServlet {
     }
 
     private void updateComponent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        int componentId = Integer.parseInt(req.getParameter("componentId"));
-//        String componentName = req.getParameter("componentName");
-//        double price = Double.parseDouble(req.getParameter("price"));
-//        int supplierId = Integer.parseInt(req.getParameter("supplierId"));
-//
-//        ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
-//        ComponentsInf componentsInf = componentsInfDAO.queryComponentsById(componentId);
-//        componentsInf.setSupplierId(supplierId);
-//        componentsInf.setPrice(price);
-//        componentsInf.setName(componentName);
-//        componentsInfDAO.updateComponentsInf(componentsInf);
+        int componentId = Integer.parseInt(req.getParameter("componentId"));
+        String componentName = (String) req.getAttribute("componentName");
+        double price = Double.parseDouble(req.getParameter("price"));
+        int supplierId = Integer.parseInt(req.getParameter("supplierId"));
+
+        ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
+        ComponentsInf componentsInf = componentsInfDAO.queryComponentsById(componentId);
+        componentsInf.setSupplierId(supplierId);
+        componentsInf.setPrice(price);
+        componentsInf.setName(componentName);
+        componentsInf.setId(componentId);
+        componentsInfDAO.updateComponentsInf(componentsInf);
+        showComponent(req,resp);
     }
 
     private void showComponent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -97,7 +98,6 @@ public class ComponentServlet extends HttpServlet {
         int supplierId = target.getId();
 
 //        数据合理
-        if (componentName!=null&&price>0&&supplierId>0){
             //Component存储
             ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
             ComponentsInf componentsInf = new ComponentsInf();
@@ -105,7 +105,6 @@ public class ComponentServlet extends HttpServlet {
             componentsInf.setPrice(price);
             componentsInf.setSupplierId(supplierId);
             componentsInfDAO.addComponentsInf(componentsInf);
-        }
         showComponent(req,resp);
     }
 }

@@ -28,7 +28,7 @@ public class TranscodingFilter implements Filter {
         String source ;
         for (String string : set){
             source = Decoding.transcoding(servletRequest.getParameter(string));
-            servletRequest.setAttribute(string,source);
+            request.setAttribute(string,source);
         }
         filterChain.doFilter(request, response);
     }

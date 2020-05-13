@@ -28,9 +28,9 @@ public class LoginServlet extends HttpServlet {
 
         if (userDAO.login(user)) {
             req.getSession().setAttribute("username", req.getAttribute("name"));
-            resp.sendRedirect("home.jsp");
+            resp.getWriter().write("1");
         } else {
-            resp.sendRedirect("LOGIN.jsp");
+            resp.getWriter().write("2");
         }
     }
 

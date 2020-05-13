@@ -19,7 +19,6 @@
     <h2>LOGIN</h2>
 
     <div id="form">
-        <form action="/login" method="post">
             <div id="input_box">
                 <i class="iconfont icon-user"></i>
                 <input id="text" type="text" placeholder="Username" name="name">
@@ -29,7 +28,6 @@
                 <input id="password" type="password" placeholder="Password" name="password">
             </div>
             <button id="button">Sign in</button>
-        </form>
     </div>
     <!--        在这里跳转到修改密码、申述页面-->
 
@@ -54,6 +52,21 @@
             }else if (!$("#password").val()){
                 alert("密码不能为空！");
                 return;
+            }else {
+                $.post(
+                    "/login",
+                    {
+                        name:$("#text").val(),
+                        password:$("#password").val(),
+                    },
+                    function (msg) {
+                        if (msg=="1"){
+                            window.location.href="home.jsp";
+                        }else {
+                            alert("账户不存在或者密码错误！");
+                        }
+                    }
+                )
             }
         })
     });
