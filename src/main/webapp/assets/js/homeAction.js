@@ -14,4 +14,8 @@ $(function () {
     $("#button-report").click(function () {
         window.location.href='/button?button=report';
     })
+
+    $("#button-inventory").click(function () {
+        window.location.href='/button?button=inventory';
+    })
 })

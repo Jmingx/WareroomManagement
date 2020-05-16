@@ -42,7 +42,7 @@ public class SupplierServlet extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         SupplierInfDAO supplierInfDAO = new SupplierInfDAO();
         supplierInfDAO.deleteSupplierById(id);
-        showSupplier(req,resp);
+//        showSupplier(req,resp);
     }
 
     public void updateSupplier(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -56,7 +56,7 @@ public class SupplierServlet extends HttpServlet {
         supplierInf.setName(name);
 
         new SupplierInfDAO().updateSupplier(supplierInf);
-        showSupplier(req,resp);
+//        showSupplier(req,resp);
     }
 
     private void showSupplier(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -77,6 +77,6 @@ public class SupplierServlet extends HttpServlet {
         supplierInf.setName(name);
         supplierInf.setContact(contact);
         supplierInfDAO.addSupplier(supplierInf);
-        showSupplier(req,resp);
+//        showSupplier(req,resp);
     }
 }

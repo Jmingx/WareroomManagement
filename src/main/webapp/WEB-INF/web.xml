@@ -56,7 +56,10 @@
         <servlet-name>register</servlet-name>
         <servlet-class>club.jming.servlet.RegisterServlet</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>inventory</servlet-name>
+        <servlet-class>club.jming.servlet.InventoryServlet</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
@@ -86,5 +89,9 @@
     <servlet-mapping>
         <servlet-name>register</servlet-name>
         <url-pattern>/register</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>inventory</servlet-name>
+        <url-pattern>/inventory</url-pattern>
     </servlet-mapping>
 </web-app>

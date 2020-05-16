@@ -28,7 +28,8 @@
     <% int i = 0; %>
     <c:forEach var="component" items="${components}">
         <tr class="tr-core">
-            <td><%=++i%></td>
+            <td><%=++i%>
+            </td>
                 <%--注意这里的map取值--%>
             <td>${component.id}</td>
             <td>${component.name}</td>
@@ -38,7 +39,9 @@
                 <button id="delete" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2"
                         onclick="delete_component(${component.id},${component.supplierId})">删除
                 </button>
-                <button id="update" onclick="update_business(${component.id},${component.supplierId})" style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2" >更新</button>
+                <button id="update" onclick="update_business(${component.id},${component.supplierId})"
+                        style="font-size: 15px;border-radius: 20px;outline: none;background-color: #c2c2c2">更新
+                </button>
             </td>
         </tr>
     </c:forEach>
@@ -52,8 +55,6 @@
 
     <input id="input-price" type="text" name="price" placeholder="输入价格(例如：10)"
            style="width: 200px;text-align: center;border-radius: 10px;outline: none;margin-top: 10px"><br/>
-    <%--    <input id="input-supplierId" type="text" name="supplierId" placeholder="供应商编号"--%>
-    <%--           style="width: 200px;text-align: center;border-radius: 10px;outline: none;margin-top: 10px">--%>
     <select id="input-supplierId" type="text" name="supplierId"
             style="border-radius: 20px;outline: none;margin-top: 10px">
         <option>-请选择供应商-</option>
@@ -76,59 +77,82 @@
 
     $(function () {
         $("#add-submit").click(function () {
-            if ($("#input-name").val()!=null&&$("#input-price").val()>0&&($("#input-price").val()instanceof Number)&&$("#input-supplierId").val()!== "-请选择供应商-") {
+            if ($("#input-name").val() != null &&
+                $("#input-price").val() > 0 &&
+                !isNaN($("#input-price").val()) &&
+                $("#input-supplierId").val() !== "-请选择供应商-") {
                 //AJAX传参
-                $.get("/component", {
+                $.get("/component",
+                    {
                     type: "insert",
                     name: $("#input-name").val(),
                     price: $("#input-price").val(),
                     supplierId: $("#input-supplierId").val()
-                });
-                //需要设置定时器，等数据更新完再刷新
-                window.setTimeout('window.location.reload()', 500);
-            }else {
+                    },
+                    function (msg) {
+                    if (msg=="1"){
+                        alert("增加成功！");
+                        parent.location.reload();
+                    }else {
+                        alert("增加失败！");
+                    }
+
+                    }
+                );
+            } else {
                 alert("输入数据有误！");
             }
         })
     })
 
     function delete_component(id) {
-        if (confirm("确认删除?")){
-            $.get("/component", {type: "delete", id: id});
-            // $(obj).parents("tr").remove();
-            window.setTimeout('window.location.reload()', 500);
+        if (confirm("确认删除?")) {
+            $.get("/component", {type: "delete", id: id},
+                function (msg) {
+                if (msg=="1"){
+                    alert("删除成功！");
+                    parent.location.reload();
+                }else {
+                    alert("删除失败！");
+                }
+
+            });
         }
     }
 
-    function update_business(id,supplierId) {
-        if (confirm("是否更新？")){
+    function update_business(id, supplierId) {
+        if (confirm("是否更新？")) {
             var componentName = prompt("请输入更新后的零件名称？").trim();
-            if (componentName==""){
+            if (componentName == "") {
                 alert("零件名称不能为空值");
                 return;
             }
             var price = prompt("请输入更新后的价格").trim();
-            var price = new Number(price);
-            if (!(price > 0) ){
-                alert("请输入正确的数值!"+"          "+price);
+            if (!(price > 0)) {
+                alert("请输入正确的数值!" + "          " + price);
                 return;
             }
             supplierId = new Number(supplierId);
-            if (confirm("是否确认更新？"+componentName+":"+price+"￥")){
+            if (confirm("是否确认更新？" + componentName + ":" + price + "￥")) {
 
                 $.get(
                     "/component",
                     {
-                        type:"update",
-                        componentId:id,
-                        componentName:componentName,
-                        price:price,
-                        supplierId:supplierId
+                        type: "update",
+                        componentId: id,
+                        componentName: componentName,
+                        price: price,
+                        supplierId: supplierId
                     }
                     ,
                     function (msg) {
+                        if (msg=="1"){
                             alert("更新成功！");
-                            window.setTimeout('window.location.reload()', 500);
+                            setTimeout("parent.location.reload()",400);
+                        }else {
+                            alert("更新失败！");
+                        }
+
                     }
                 )
             }

@@ -59,3 +59,10 @@ public void doFilter(ServletRequest servletRequest, ServletResponse servletRespo
 ## 2020-5-13
 1.增加了**修改**功能
 2.修复了部分bug，密码登录失败将会有反馈
+
+## 2020-5-16
+1.利用回调函数修复了**延迟**，取消了利用延迟才能加载成功的奇怪实现
+2.增加了显示库存清单功能
+3.修改了增加、删除、修改事务时库存清单数据错误bug
+
+待改进：后台没有利用filter实现**用户在线**功能，有空修复一下

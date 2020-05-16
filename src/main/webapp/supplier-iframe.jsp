@@ -68,13 +68,17 @@
         $("#add-submit").click(function () {
             if ($("#input-name").val() != "" && $("#input-contact").val() != "") {
                 //AJAX传参
-                $.get("/supplier", {
+                $.get("/supplier",
+                    {
                     type: "insert",
                     name: $("#input-name").val(),
                     contact: $("#input-contact").val()
-                });
-                //需要设置定时器，等数据更新完再刷新
-                window.setTimeout('window.location.reload()', 500);
+                    },
+                    function () {
+                        alert("增加成功！");
+                        parent.location.reload();
+                    });
+
             } else {
                 alert("请检查输入是否符合格式！");
             }
@@ -84,9 +88,11 @@
 
     function delete_business(id, obj) {
         if (confirm("确认删除?")){
-            $.get("/supplier", {type: "delete", id: id});
-            // $(obj).parents("tr").remove();
-            window.setTimeout('window.location.reload()', 500);
+            $.get("/supplier", {type: "delete", id: id},
+            function () {
+                alert("删除成功！");
+                parent.location.reload();
+            });
         }
     }
 
@@ -110,7 +116,7 @@
                     ,
                     function () {
                         alert("更新成功！");
-                        window.setTimeout('window.location.reload()', 500);
+                        parent.location.reload();
                     }
                 )
             }

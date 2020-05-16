@@ -37,6 +37,7 @@ public class InventoryListDAO {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
 //            查询不到外键别报错啊
+            e.printStackTrace();
         }finally {
             JDBCUtil.release(preparedStatement,connection);
         }
@@ -80,6 +81,7 @@ public class InventoryListDAO {
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
 //            没有匹配到外键别报错啊
+            e.printStackTrace();
         }finally {
             JDBCUtil.release(preparedStatement,connection);
         }

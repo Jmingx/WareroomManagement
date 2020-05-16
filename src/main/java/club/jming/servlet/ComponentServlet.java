@@ -25,21 +25,21 @@ public class ComponentServlet extends HttpServlet {
         String type = req.getParameter("type");
 //        System.out.println(type+"--component");
 
-        if (type.equals("show")){
-            showComponent(req,resp);
+        if (type.equals("show")) {
+            showComponent(req, resp);
         }
-        if (type.equals("delete")){
+        if (type.equals("delete")) {
 //            System.out.println("delete");
-            deleteComponent(req,resp);
+            deleteComponent(req, resp);
         }
-        if (type.equals("update")){
+        if (type.equals("update")) {
 //            System.out.println("update");
-            updateComponent(req,resp);
+            updateComponent(req, resp);
         }
-        if (type.equals("search")){
+        if (type.equals("search")) {
         }
-        if (type.equals("insert")){
-            insertComponent(req,resp);
+        if (type.equals("insert")) {
+            insertComponent(req, resp);
         }
     }
 
@@ -47,7 +47,7 @@ public class ComponentServlet extends HttpServlet {
         int id = Integer.parseInt(req.getParameter("id"));
         ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
         componentsInfDAO.deleteComponentsInfById(id);
-        showComponent(req,resp);
+        resp.getWriter().write("1");
     }
 
     private void updateComponent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -63,7 +63,7 @@ public class ComponentServlet extends HttpServlet {
         componentsInf.setName(componentName);
         componentsInf.setId(componentId);
         componentsInfDAO.updateComponentsInf(componentsInf);
-        showComponent(req,resp);
+        resp.getWriter().write("1");
     }
 
     private void showComponent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -73,9 +73,9 @@ public class ComponentServlet extends HttpServlet {
         SupplierInfDAO supplierInfDAO = new SupplierInfDAO();
         List<SupplierInf> supplierInfs = supplierInfDAO.queryAllSuppliers();
 
-        req.getSession().setAttribute("components",componentsInfs);
-        req.getSession().setAttribute("suppliers",supplierInfs);
-        req.getRequestDispatcher("component.jsp").forward(req,resp);
+        req.getSession().setAttribute("components", componentsInfs);
+        req.getSession().setAttribute("suppliers", supplierInfs);
+        req.getRequestDispatcher("component.jsp").forward(req, resp);
     }
 
     private void insertComponent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -89,22 +89,22 @@ public class ComponentServlet extends HttpServlet {
         SupplierInf target = null;
 //        System.out.println(supplierName);
 //        System.out.println(supplierInfs);
-        for (SupplierInf supplierInf : supplierInfs){
+        for (SupplierInf supplierInf : supplierInfs) {
 //            System.out.println(supplierInf);
-            if (supplierInf.getName().equals(supplierName)){
+            if (supplierInf.getName().equals(supplierName)) {
                 target = supplierInf;
             }
         }
         int supplierId = target.getId();
 
 //        数据合理
-            //Component存储
-            ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
-            ComponentsInf componentsInf = new ComponentsInf();
-            componentsInf.setName(componentName);
-            componentsInf.setPrice(price);
-            componentsInf.setSupplierId(supplierId);
-            componentsInfDAO.addComponentsInf(componentsInf);
-        showComponent(req,resp);
+        //Component存储
+        ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
+        ComponentsInf componentsInf = new ComponentsInf();
+        componentsInf.setName(componentName);
+        componentsInf.setPrice(price);
+        componentsInf.setSupplierId(supplierId);
+        componentsInfDAO.addComponentsInf(componentsInf);
+        resp.getWriter().write("1");
     }
 }

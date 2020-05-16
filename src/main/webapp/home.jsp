@@ -22,7 +22,7 @@
     <div class="top-box">
         <a href="/home.jsp"><i id="logo" class="iconfont icon-cangkuguanlikufangguanli"></i></a>
         <h1 id="head">仓库管理系统</h1>
-        <ul class="catalog-list">
+        <ul class="catalog-list" >
             <li>欢迎 ${username}</li>
             <li><a href="/login?type=logout">退出</a></li>
         </ul>
@@ -48,9 +48,18 @@
             </button>
         </span>
         <div class="report-box">
-            <button id="button-report">点击生成报表</button>
+            <button id="button-report"  class="button">点击生成报表>></button>
+            <button id="button-inventory" class="button" onclick="window.location.href='/button?button=inventory'">查看库存清单>></button>
         </div>
     </div>
 </div>
 </body>
 </html>
+<style>
+    .button{
+        font-size: 18px;
+        height: 40px;
+        margin-top: 20px;
+        color: #ffffff;
+    }
+</style>

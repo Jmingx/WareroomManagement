@@ -25,5 +25,8 @@ public class buttonServlet extends HttpServlet {
         if (button.equals("report")){
             resp.sendRedirect("/report?type=show");
         }
+        if (button.equals("inventory")){
+            resp.sendRedirect("/inventory?type=show");
+        }
     }
 }
