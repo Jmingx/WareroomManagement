@@ -1,0 +1,28 @@
+[
+  {
+    "title": "仓库管理系统",
+    "icon": "&#xe674;",
+    "children": [
+      {
+        "title": "库存清单",
+        "href": "/page/inventory/InventoryList.jsp"
+      },
+      {
+        "title": "事务清单",
+        "href": "/page/business/businessList.jsp"
+      },
+      {
+        "title": "零件信息",
+        "href": "page/component/ComponentList.jsp"
+      },
+      {
+        "title": "供应商信息",
+        "href": "page/supplier/SupplierList.jsp"
+      },
+      {
+        "title": "生成报表",
+        "href": "page/reporter/ReporterList.jsp"
+      }
+    ]
+  }
+]

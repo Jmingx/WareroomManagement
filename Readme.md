@@ -1,4 +1,6 @@
-前端使用原生jquery+html+css+js
+软工作业
+
+前端使用原生admin模板
 后台使用经典servlet+jsp
 
 基本上没用什么框架，非常简单的练手作业
@@ -66,3 +68,8 @@ public void doFilter(ServletRequest servletRequest, ServletResponse servletRespo
 3.修改了增加、删除、修改事务时库存清单数据错误bug
 
 待改进：后台没有利用filter实现**用户在线**功能，有空修复一下
+
+## 2020-5-25
+1.V2.0 肝了14个钟，成功将前端进行大更新，后台也换了点内容，选用的是admin前端模板
+
+2.粗略测试，上线

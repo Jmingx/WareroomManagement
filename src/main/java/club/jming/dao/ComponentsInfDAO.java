@@ -120,7 +120,7 @@ public class ComponentsInfDAO {
      * @return
      */
     public ComponentsInf queryComponentsById(int id){
-        ComponentsInf componentsInf = new ComponentsInf();
+        ComponentsInf componentsInf = null;
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -131,6 +131,7 @@ public class ComponentsInfDAO {
             preparedStatement.setInt(1,id);
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
+                componentsInf = new ComponentsInf();
                 componentsInf.setName(resultSet.getString("name"));
                 componentsInf.setPrice(resultSet.getDouble("price"));
                 componentsInf.setSupplierId(resultSet.getInt("supplierId"));
@@ -141,5 +142,38 @@ public class ComponentsInfDAO {
             JDBCUtil.release(resultSet,preparedStatement,connection);
         }
         return componentsInf;
+    }
+
+    /**
+     * 模糊搜索
+     * @param pattern
+     * @return
+     */
+    public List<ComponentsInf> fuzzySearch(String pattern){
+        ComponentsInf componentsInf = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<ComponentsInf> componentsInfs = new ArrayList<>();
+        try {
+            connection = JDBCUtil.getConnection();
+            String sql = "select * from componentInf where name like ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,"%"+pattern+"%");
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                componentsInf = new ComponentsInf();
+                componentsInf.setId(resultSet.getInt("id"));
+                componentsInf.setName(resultSet.getString("name"));
+                componentsInf.setPrice(resultSet.getDouble("price"));
+                componentsInf.setSupplierId(resultSet.getInt("supplierId"));
+                componentsInfs.add(componentsInf);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            JDBCUtil.release(resultSet,preparedStatement,connection);
+        }
+        return componentsInfs;
     }
 }

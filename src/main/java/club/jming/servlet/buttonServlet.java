@@ -7,8 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * V1.0
  * 主页的按钮控制器，用来进行页面跳转，起名不是很合理...
  */
+@Deprecated
 public class buttonServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {

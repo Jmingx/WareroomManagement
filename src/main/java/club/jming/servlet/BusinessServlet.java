@@ -3,23 +3,37 @@ package club.jming.servlet;
 import club.jming.dao.BusinessDAO;
 import club.jming.dao.ComponentsInfDAO;
 import club.jming.dao.InventoryListDAO;
-import club.jming.entity.Business;
-import club.jming.entity.ComponentsInf;
-import club.jming.entity.InventoryList;
+import club.jming.dao.SupplierInfDAO;
+import club.jming.entity.*;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.ValueFilter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * 事务servlet，对事务信息做处理
  */
 public class BusinessServlet extends HttpServlet {
+
+    ValueFilter filter = new ValueFilter() {
+        @Override
+        public Object process(Object object, String name, Object value) {
+            if(value instanceof BigDecimal || value instanceof Double || value instanceof Float){
+                DecimalFormat df   =new   java.text.DecimalFormat("#.00");
+                return df.format(value);
+            }
+            return value;
+        }
+    };
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
     }
@@ -27,7 +41,7 @@ public class BusinessServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String type = req.getParameter("type");
-//        System.out.println(type + "------");
+        System.out.println(type + "----type--");
 
         if (type.equals("show")) {
             showBusiness(req, resp);
@@ -44,6 +58,44 @@ public class BusinessServlet extends HttpServlet {
         if (type.equals("insert")) {
             insertBusiness(req, resp);
         }
+        if (type.equals("batchDelete")) {
+            batchDelete(req, resp);
+        }
+
+        //模糊搜索
+        if (type.equals("search")){
+            search(req,resp);
+        }
+    }
+
+    //模糊搜索
+    private void search(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String pattern = req.getParameter("componentName");
+
+        //转换字符集
+        byte[] bytes=  pattern.getBytes("ISO-8859-1");
+        pattern = new String(bytes,"UTF-8");
+
+//        pattern = "%"+pattern+"%";
+
+        System.out.println(pattern);
+        List<BusinessToShow> businessToShows = this.queryBusinessToShowByComponentName(pattern);
+
+        resp.setContentType("application/json;charset=utf-8");
+
+        System.out.println(JSON.toJSONString(new ResMessage(200, "succeed", businessToShows)));
+        resp.getWriter().write(JSON.toJSONString(new ResMessage(200, "succeed", businessToShows), filter));
+    }
+
+    private void deleteSupplier(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        SupplierInfDAO supplierInfDAO = new SupplierInfDAO();
+        supplierInfDAO.deleteSupplierById(id);
+
+        resp.setContentType("application/json;charset=utf-8");
+        System.out.println(JSON.toJSONString(new ResMessage(0,"succeed","删除成功")));
+        resp.getWriter().write(JSON.toJSONString(new ResMessage(0,"succeed","删除成功"),filter));
+//        showSupplier(req,resp);
     }
 
     /**
@@ -59,66 +111,37 @@ public class BusinessServlet extends HttpServlet {
         int businessId = Integer.parseInt(req.getParameter("id"));
         BusinessDAO businessDAO = new BusinessDAO();
         Business target = businessDAO.queryBusinessById(businessId);
-        int business = Integer.parseInt(req.getParameter("business"));
+        int business = businessDAO.queryBusinessById(businessId).getBusiness();
         int componentId = businessDAO.queryBusinessById(businessId).getComponentId();
 
-        //能否在库存清单找到相应的库存信息
-        boolean isFound = false;
+        System.out.println(businessId);
+        System.out.println(business);
 
-        InventoryListDAO inventoryListDAO = new InventoryListDAO();
-        List<InventoryList> inventoryLists = inventoryListDAO.queryAllInventoryList();
-        for (InventoryList inventoryList : inventoryLists) {
-            if (inventoryList.getComponentId().equals(target.getComponentId())) {
-                isFound = true;
-                int old = inventoryList.getInventory();
+        resp.setContentType("application/json;charset=utf-8");
 
-                int newInventory = old - target.getBusiness();
-                if (newInventory>0){
-                    inventoryList.setInventory(newInventory);
-                    inventoryListDAO.updateInventoryList(inventoryList);
-                    //可以删除
-                    businessDAO.deleteBusinessById(businessId);
-                    resp.getWriter().write("1");
-                }else if (newInventory==0){
-//                    inventoryList.setInventory(newInventory);
-                    inventoryListDAO.deleteInventoryListById(inventoryList.getId());
-                    //可以删除
-                    businessDAO.deleteBusinessById(businessId);
-                    resp.getWriter().write("1");
-                }else {
-                    resp.getWriter().write("2");
-                }
-
-
-            }
-        }
-        //没有找到
-        if (!isFound){
-            if (business>0){
-                //不可以删除
-                resp.getWriter().write("2");
-            }else {
-                businessDAO.deleteBusinessById(businessId);
-                InventoryList inventoryList = new InventoryList();
-                business = -business;
-                inventoryList.setInventory(business);
-                inventoryList.setCriticalValue(100);
-                inventoryList.setComponentId(componentId);
-//                System.out.println(componentId);
-                inventoryListDAO.addInventoryList(inventoryList);
-                //可以删除
-                businessDAO.deleteBusinessById(businessId);
-                resp.getWriter().write("1");
-            }
+        if (checkToDelete(businessId)==true){
+            businessDAO.deleteBusinessById(businessId);
+            System.out.println(JSON.toJSONString(new ResMessage(0, "succeed", "删除成功")));
+            resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "succeed", "删除成功"), filter));
+        }else {
+            System.out.println(JSON.toJSONString(new ResMessage(0, "fail", "删除失败")));
+            resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "fail", "删除失败"), filter));
         }
     }
 
     public void updateBusiness(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int componentId = Integer.parseInt(req.getParameter("componentId"));
+
+        System.out.println("update---"+componentId);
+
         int business = Integer.parseInt(req.getParameter("business"));
+
+        System.out.println("business---"+business);
+
         //businessId
         int id = Integer.parseInt(req.getParameter("id"));
-        int oldBusiness = Integer.parseInt(req.getParameter("oldBusiness"));
+        int oldBusiness = new BusinessDAO().queryBusinessById(id).getBusiness();
+
         //是否找到相应的库存清单信息
         boolean isFound = false;
 
@@ -141,15 +164,27 @@ public class BusinessServlet extends HttpServlet {
                     //允许修改
                     new BusinessDAO().updateBusiness(business1);
                     new InventoryListDAO().updateInventoryList(list);
-                    resp.getWriter().write("1");
+//                    resp.getWriter().write("1");
+
+                    System.out.println(JSON.toJSONString(new ResMessage(0, "succeed", "更新成功")));
+                    resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "succeed", "更新成功"), filter));
+
                 }else if (newInventory == 0 ){
                     //允许修改并删除
                     new InventoryListDAO().deleteInventoryListById(list.getId());
                     new BusinessDAO().updateBusiness(business1);
-                    resp.getWriter().write("1");
+//                    resp.getWriter().write("1");
+
+                    System.out.println(JSON.toJSONString(new ResMessage(0, "succeed", "更新成功")));
+                    resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "succeed", "更新成功"), filter));
+
+
                 }else {
                     //不允许修改
-                    resp.getWriter().write("2");
+//                    resp.getWriter().write("2");
+                    System.out.println(JSON.toJSONString(new ResMessage(0, "fail", "更新失败")));
+                    resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "fail", "更新失败"), filter));
+
                 }
                 break;
             }
@@ -159,7 +194,10 @@ public class BusinessServlet extends HttpServlet {
         if (!isFound){
             if ((oldBusiness-business)>=0){
                 //不可以删除
-                resp.getWriter().write("2");
+//                resp.getWriter().write("2");
+
+                System.out.println(JSON.toJSONString(new ResMessage(0, "fail", "修改失败")));
+                resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "fail", "修改失败"), filter));
             }else {
                 InventoryList inventoryList = new InventoryList();
                 inventoryList.setComponentId(componentId);
@@ -168,7 +206,11 @@ public class BusinessServlet extends HttpServlet {
                 inventoryList.setInventory(business);
                 new InventoryListDAO().addInventoryList(inventoryList);
                 new BusinessDAO().updateBusiness(business1);
-                resp.getWriter().write("1");
+//                resp.getWriter().write("1");
+
+                System.out.println(JSON.toJSONString(new ResMessage(0, "succeed", "修改成功")));
+                resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "succeed", "修改成功"), filter));
+
             }
         }
     }
@@ -176,22 +218,82 @@ public class BusinessServlet extends HttpServlet {
     private void showBusiness(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         BusinessDAO businessDAO = new BusinessDAO();
         List<Business> businesses = businessDAO.queryAllBusinesses();
+        List<BusinessToShow> businessToShows = new ArrayList<>();
 
+        BusinessToShow businessToShow = null;
         //key----business,value----component'name
-        Map<Business, String> map = new HashMap();
+//        Map<Business, String> map = new HashMap();
         //显示零件名称
         ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
         for (Business business : businesses) {
-            map.put(business, componentsInfDAO.queryComponentsById(business.getComponentId()).getName());
+//            map.put(business, componentsInfDAO.queryComponentsById(business.getComponentId()).getName());
+
+            String componentName = componentsInfDAO.queryComponentsById(business.getComponentId()).getName();
+            businessToShow = new BusinessToShow();
+            businessToShow.setBusiness(business.getBusiness());
+            businessToShow.setComponentId(business.getComponentId());
+            businessToShow.setComponentName(componentName);
+            businessToShow.setId(business.getId());
+            businessToShows.add(businessToShow);
 //            System.out.println(componentsInfDAO.queryComponentsById(business.getComponentId()).getName());
         }
 
-        List<ComponentsInf> componentsInfs = componentsInfDAO.queryAllComponentsInfs();
-        //把作用域提升到session，免得考虑如何传参给iframe
-        req.getSession().setAttribute("businesses", businesses);
-        req.getSession().setAttribute("components", componentsInfs);
-        req.getSession().setAttribute("map", map);
-        req.getRequestDispatcher("business.jsp").forward(req, resp);
+//        List<ComponentsInf> componentsInfs = componentsInfDAO.queryAllComponentsInfs();
+//        //把作用域提升到session，免得考虑如何传参给iframe
+//        req.getSession().setAttribute("businesses", businesses);
+//        req.getSession().setAttribute("components", componentsInfs);
+//        req.getSession().setAttribute("map", map);
+//        req.getRequestDispatcher("business.jsp").forward(req, resp);
+
+        resp.setContentType("application/json;charset=utf-8");
+
+        System.out.println(JSON.toJSONString(new ResMessage(200, "succeed", businessToShows)));
+        resp.getWriter().write(JSON.toJSONString(new ResMessage(200, "succeed", businessToShows), filter));
+
+    }
+
+
+    /**
+     * 通过名称找到零件
+     * @param pattern
+     * @return
+     */
+    private List<BusinessToShow> queryBusinessToShowByComponentName(String pattern){
+        BusinessDAO businessDAO = new BusinessDAO();
+        List<Business> businesses = businessDAO.queryAllBusinesses();
+        List<BusinessToShow> businessToShows = new ArrayList<>();
+
+        BusinessToShow businessToShow = null;
+        //key----business,value----component'name
+        //显示零件名称
+        ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
+        for (Business business : businesses) {
+//            map.put(business, componentsInfDAO.queryComponentsById(business.getComponentId()).getName());
+            //找到零件名字符合的business
+            String componentName = componentsInfDAO.queryComponentsById(business.getComponentId()).getName();
+            System.out.println(componentName+"----match1----"+pattern);
+            //用不了正则，这里代替
+            if (componentName.contains(pattern)||componentName.toLowerCase().contains(pattern.toLowerCase())){
+                System.out.println(componentName+"----match");
+                businessToShow = new BusinessToShow();
+                businessToShow.setBusiness(business.getBusiness());
+                businessToShow.setComponentId(business.getComponentId());
+                businessToShow.setComponentName(componentName);
+                businessToShow.setId(business.getId());
+                businessToShows.add(businessToShow);
+            }
+
+//            System.out.println(componentsInfDAO.queryComponentsById(business.getComponentId()).getName());
+        }
+
+//        List<ComponentsInf> componentsInfs = componentsInfDAO.queryAllComponentsInfs();
+//        //把作用域提升到session，免得考虑如何传参给iframe
+//        req.getSession().setAttribute("businesses", businesses);
+//        req.getSession().setAttribute("components", componentsInfs);
+//        req.getSession().setAttribute("map", map);
+//        req.getRequestDispatcher("business.jsp").forward(req, resp);
+
+        return businessToShows;
     }
 
     /**
@@ -204,24 +306,12 @@ public class BusinessServlet extends HttpServlet {
         boolean isOK = false;
         BusinessDAO businessDAO = new BusinessDAO();
         Business business = new Business();
-        String componentName = (String) req.getAttribute("componentId");
-        ComponentsInfDAO componentsInfDAO = new ComponentsInfDAO();
-        List<ComponentsInf> componentsInfs = componentsInfDAO.queryAllComponentsInfs();
-        ComponentsInf target = null;
-        //通过名称找到零件ID
-        for (ComponentsInf componentsInf : componentsInfs) {
-            if (componentsInf.getName().equals(componentName)) {
-                target = componentsInf;
-            }
-        }
 
-
-        int componentId = target.getId();
+        int componentId = Integer.parseInt(req.getParameter("componentId"));
         int businessNum = Integer.parseInt(req.getParameter("business"));
 
         business.setComponentId(componentId);
         business.setBusiness(businessNum);
-
 
         //处理后的剩余值
         int last = businessNum;
@@ -262,14 +352,157 @@ public class BusinessServlet extends HttpServlet {
 
         if (last >= 0) {
             businessDAO.addBusiness(business);
+            System.out.println(JSON.toJSONString(new ResMessage(0, "succeed", "增加成功")));
+            resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "succeed", "增加成功"), filter));
+            return;
         }
 
         if (isOK==true){
-            resp.getWriter().write("1");
+
+            System.out.println(JSON.toJSONString(new ResMessage(0, "succeed", "增加成功")));
+            resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "succeed", "增加成功"), filter));
+//            resp.getWriter().write("1");
+
+
         }else {
-            resp.getWriter().write("2");
+//            resp.getWriter().write("2");
+
+            System.out.println(JSON.toJSONString(new ResMessage(0, "fail", "更新失败")));
+            resp.getWriter().write(JSON.toJSONString(new ResMessage(0, "fail", "更新失败"), filter));
         }
 
 //        showBusiness(req, resp);
+    }
+
+
+    //批量删除
+    public void batchDelete(HttpServletRequest request, HttpServletResponse response) {
+
+        BusinessDAO businessDAO = new BusinessDAO();
+        String ids = request.getParameter("ids");
+        Set<Integer> idSet = new HashSet<>();
+        ResMessage message = null;
+
+        //判断是否可以一并删除
+        boolean flag = true;
+
+        System.out.println(ids + "   isaidai");
+
+        response.setContentType("application/json;charset=utf-8");
+
+        try {
+            if (checkField(ids)) {
+                String[] split = ids.split(",");
+                for (String s : split) {
+                    idSet.add(Integer.parseInt(s));
+                }
+
+                for (Integer integer : idSet) {
+                    flag = checkToDelete(integer)&&flag;
+                    if (!flag){
+                        break;
+                    }
+                }
+
+                if (flag){
+                    for (Integer integer : idSet){
+                        businessDAO.deleteBusinessById(integer);
+                    }
+                    System.out.println(JSON.toJSONString(new ResMessage(0, "succeed", "删除成功")));
+                    response.getWriter().write(JSON.toJSONString(new ResMessage(0, "succeed", "删除成功"), filter));
+
+                }else {
+                    System.out.println(JSON.toJSONString(new ResMessage(0, "fail", "批量删除失败")));
+                    response.getWriter().write(JSON.toJSONString(new ResMessage(0, "fail", "批量删除失败"), filter));
+                }
+
+            }
+        } catch (IOException e) {
+            System.out.println(JSON.toJSONString(new ResMessage(0, "fail", "删除失败")));
+            try {
+                response.getWriter().write(JSON.toJSONString(new ResMessage(0, "fail", "删除失败"), filter));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            e.printStackTrace();
+        }
+
+    }
+
+    private boolean checkField(String field) {
+        return field != null && !"".equals(field);
+    }
+
+
+    private boolean checkToDelete(Integer businessId){
+        //事务的id
+        BusinessDAO businessDAO = new BusinessDAO();
+        Business target = businessDAO.queryBusinessById(businessId);
+        int business = businessDAO.queryBusinessById(businessId).getBusiness();
+        int componentId = businessDAO.queryBusinessById(businessId).getComponentId();
+
+        System.out.println(businessId);
+        System.out.println(business);
+
+        //能否在库存清单找到相应的库存信息
+        boolean isFound = false;
+
+        InventoryListDAO inventoryListDAO = new InventoryListDAO();
+        List<InventoryList> inventoryLists = inventoryListDAO.queryAllInventoryList();
+        for (InventoryList inventoryList : inventoryLists) {
+            if (inventoryList.getComponentId().equals(target.getComponentId())) {
+                isFound = true;
+                int old = inventoryList.getInventory();
+
+                int newInventory = old - target.getBusiness();
+                if (newInventory>0){
+                    inventoryList.setInventory(newInventory);
+                    inventoryListDAO.updateInventoryList(inventoryList);
+                    //可以删除
+
+//                    resp.getWriter().write("1");
+
+                    return true;
+                }else if (newInventory==0){
+//                    inventoryList.setInventory(newInventory);
+                    inventoryListDAO.deleteInventoryListById(inventoryList.getId());
+                    //可以删除
+//                    businessDAO.deleteBusinessById(businessId);
+//                    resp.getWriter().write("1");
+
+                    return true;
+                }else {
+//                    resp.getWriter().write("2");
+                    return false;
+                }
+
+
+            }
+        }
+        //没有找到
+        if (!isFound){
+            if (business>0){
+                //不可以删除
+//                resp.getWriter().write("2");
+                return false;
+            }else {
+                businessDAO.deleteBusinessById(businessId);
+                InventoryList inventoryList = new InventoryList();
+                business = -business;
+                inventoryList.setInventory(business);
+                inventoryList.setCriticalValue(100);
+                inventoryList.setComponentId(componentId);
+//                System.out.println(componentId);
+                inventoryListDAO.addInventoryList(inventoryList);
+                //可以删除
+//                businessDAO.deleteBusinessById(businessId);
+//                resp.getWriter().write("1");
+
+                return true;
+            }
+        }
+
+
+        return false;
     }
 }

@@ -10,8 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * V1.0
  * 用于拦截req，将parameter对转换字符集，然后装进attribute
  */
+@Deprecated
 public class TranscodingFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

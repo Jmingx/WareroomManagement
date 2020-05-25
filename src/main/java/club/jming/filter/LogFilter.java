@@ -8,8 +8,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * V0.0
  * demo filter
  */
+@Deprecated
 public class LogFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

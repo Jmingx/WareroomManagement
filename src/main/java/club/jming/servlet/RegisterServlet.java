@@ -9,8 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * V1.0
  * 注册服务器
  */
+@Deprecated
 public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {

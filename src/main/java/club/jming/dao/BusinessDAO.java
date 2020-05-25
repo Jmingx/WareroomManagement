@@ -1,6 +1,7 @@
 package club.jming.dao;
 
 import club.jming.entity.Business;
+import club.jming.entity.SupplierInf;
 import club.jming.utils.JDBCUtil;
 
 import java.sql.Connection;
@@ -144,4 +145,5 @@ public class BusinessDAO {
         }
         return business;
     }
+
 }

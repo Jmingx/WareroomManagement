@@ -1,6 +1,7 @@
 package club.jming.dao;
 
 import club.jming.entity.InventoryList;
+import club.jming.entity.PageVo;
 import club.jming.utils.JDBCUtil;
 
 import java.sql.Connection;
@@ -9,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 库存清单DAO
@@ -147,4 +150,5 @@ public class InventoryListDAO {
         return inventoryList;
 
     }
+
 }

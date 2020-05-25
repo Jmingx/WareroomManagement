@@ -1,5 +1,6 @@
 package club.jming.dao;
 
+import club.jming.entity.ComponentsInf;
 import club.jming.entity.SupplierInf;
 import club.jming.utils.JDBCUtil;
 
@@ -144,5 +145,35 @@ public class SupplierInfDAO {
         return supplierInf;
     }
 
-
+    /**
+     * 模糊搜索
+     * @param pattern
+     * @return
+     */
+    public List<SupplierInf> fuzzySearch(String pattern){
+        SupplierInf supplierInf = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<SupplierInf> supplierInfs = new ArrayList<>();
+        try {
+            connection = JDBCUtil.getConnection();
+            String sql = "select * from supplierInf where name like ?";
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,"%"+pattern+"%");
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()){
+                supplierInf = new SupplierInf();
+                supplierInf.setId(resultSet.getInt("id"));
+                supplierInf.setName(resultSet.getString("name"));
+                supplierInf.setContact(resultSet.getString("contact"));
+                supplierInfs.add(supplierInf);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            JDBCUtil.release(resultSet,preparedStatement,connection);
+        }
+        return supplierInfs;
+    }
 }
