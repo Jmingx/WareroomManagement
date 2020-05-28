@@ -48,8 +48,9 @@ layui.define(["layer"], function (exprots) {
          */
         isFrontendBackendSeparate: true,
         /**
-         * 服务器地址
+         * 服务器地址,部署到服务器需要修改
          */
+        // baseUrl: "http://jming.club",
         baseUrl: "http://localhost:80",
         /**
          * 获取body的总宽度

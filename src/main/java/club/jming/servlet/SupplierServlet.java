@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
+ * 在get方法转换字符集问题的时候，tomcat9已经做了优化，get方法默认字符集为utf-8，所以无需再转换，转换反而会报错
  * 事务servlet，对事务信息做处理
  */
 public class SupplierServlet extends HttpServlet {
@@ -80,8 +81,8 @@ public class SupplierServlet extends HttpServlet {
         String pattern = req.getParameter("supplierName");
 
         //转换字符集
-        byte[] bytes=  pattern.getBytes("ISO-8859-1");
-        pattern = new String(bytes,"UTF-8");
+//        byte[] bytes=  pattern.getBytes("ISO-8859-1");
+//        pattern = new String(bytes,"UTF-8");
 
         System.out.println(pattern);
         List<SupplierInf> supplierInfs = new SupplierInfDAO().fuzzySearch(pattern);

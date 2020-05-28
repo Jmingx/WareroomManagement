@@ -73,8 +73,8 @@ public class BusinessServlet extends HttpServlet {
         String pattern = req.getParameter("componentName");
 
         //转换字符集
-        byte[] bytes=  pattern.getBytes("ISO-8859-1");
-        pattern = new String(bytes,"UTF-8");
+//        byte[] bytes=  pattern.getBytes("ISO-8859-1");
+//        pattern = new String(bytes,"UTF-8");
 
 //        pattern = "%"+pattern+"%";
 
@@ -336,6 +336,9 @@ public class BusinessServlet extends HttpServlet {
                     inventoryListDAO.deleteInventoryListById(inventoryList.getId());
                 }
                 isOK=true;
+                if (last<0){
+                    isOK = false;
+                }
                 break;
             }
         }
